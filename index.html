@@ -22,11 +22,20 @@
       max-width: 320px;
       padding: 0.5em;
       font-size: 1em;
-      margin-bottom: 1.5em;
+      margin-bottom: 1em;
+    }
+    .headerRow {
+      width: 100%; max-width: 320px;
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5em 1em;
+      margin-bottom: 0.5em;
+      font-weight: bold;
+      background: #eee;
+      border-radius: 4px;
     }
     .team {
-      width: 100%;
-      max-width: 320px;
+      width: 100%; max-width: 320px;
       display: flex;
       justify-content: space-between;
       padding: 0.75em 1em;
@@ -35,13 +44,7 @@
       border-radius: 6px;
       background: white;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      transition: background-color 0.3s ease;
     }
-    .team:nth-child(1) { border-color: #28a745; }
-    .team:nth-child(2) { border-color: #007bff; }
-    .team:nth-child(3) { border-color: #6c757d; }
-    .team:nth-child(4) { border-color: #dc3545; }
-    .team span { font-size: 1em; }
     #build { margin-top: 1.5em; font-size: 0.8em; color: #999; }
   </style>
   <!-- PapaParse for CSV parsing -->
@@ -54,84 +57,88 @@
   <select id="sheetSelect"></select>
 
   <div id="leaderboard"></div>
-  <div id="build">Build #4</div>
-
-   <!-- … up in your <head> keep everything the same … -->
+  <div id="build">Build #5</div>
 
   <script>
-  // ─── Sheets List ─────────────────────────────────────────────────────────
-  const SHEETS = [
-    { name: "Kopvērtējums", url: "https://docs.google.com/spreadsheets/d/1vGwEZFF1CQug9Zu-lolmuZ7ZMH5hLOklmYTydHhktaw/export?format=csv&gid=0" },
-    { name: "Rodeo",        url: "https://docs.google.com/spreadsheets/d/1GRv7i8FD7Ergscl2znh7MkmootGrzVgSx2i1QJDpoiY/export?format=csv&gid=0" },
-    { name: "Kannas",       url: "https://docs.google.com/spreadsheets/d/1SLgcLEFkvzDaTtQMb8UFoRMDnZSExvLN_wwiNjfwlnc/export?format=csv&gid=0" },
-    { name: "Futbols",      url: "https://docs.google.com/spreadsheets/d/102Hxs4Ae-ZNml0tGS3NFCi0lQvJ7I2deeeNQR2Crz9s/export?format=csv&gid=0" },
-    { name: "Āķis",         url: "https://docs.google.com/spreadsheets/d/1jokyEEJULQn_0ysiMpLp961rP5ilc-d_5ilPw0Mgjo0/export?format=csv&gid=0" },
-    { name: "Bungas",       url: "https://docs.google.com/spreadsheets/d/1Rf5yQxaDOvrLI-d13U9E3h0LgPc5CAEVnALtkEhZ_Us/export?format=csv&gid=0" },
-    { name: "Pakavs",       url: "https://docs.google.com/spreadsheets/d/104x2Vhi2fvGm1osQlM3EL2QGaKLfC1Sfq4phakIsRO0/export?format=csv&gid=0" },
-    { name: "Koferis",      url: "https://docs.google.com/spreadsheets/d/1fTevBQl8cf6nPYj8WWmCscjK__6Y03vei3GGXfvp_9I/export?format=csv&gid=0" },
-    { name: "Metiens",      url: "https://docs.google.com/spreadsheets/d/1BmPzOrS7vOc_IiZSTRRJv_sIEm7xcBFT6qjZMkp0PPE/export?format=csv&gid=0" }
-  ];
+    const SHEETS = [
+      { name: "Kopvērtējums", url: "https://docs.google.com/spreadsheets/d/1vGwEZFF1CQug9Zu-lolmuZ7ZMH5hLOklmYTydHhktaw/export?format=csv&gid=0" },
+      { name: "Rodeo",        url: "https://docs.google.com/spreadsheets/d/1GRv7i8FD7Ergscl2znh7MkmootGrzVgSx2i1QJDpoiY/export?format=csv&gid=0" },
+      { name: "Kannas",       url: "https://docs.google.com/spreadsheets/d/1SLgcLEFkvzDaTtQMb8UFoRMDnZSExvLN_wwiNjfwlnc/export?format=csv&gid=0" },
+      { name: "Futbols",      url: "https://docs.google.com/spreadsheets/d/102Hxs4Ae-ZNml0tGS3NFCi0lQvJ7I2deeeNQR2Crz9s/export?format=csv&gid=0" },
+      { name: "Āķis",         url: "https://docs.google.com/spreadsheets/d/1jokyEEJULQn_0ysiMpLp961rP5ilc-d_5ilPw0Mgjo0/export?format=csv&gid=0" },
+      { name: "Bungas",       url: "https://docs.google.com/spreadsheets/d/1Rf5yQxaDOvrLI-d13U9E3h0LgPc5CAEVnALtkEhZ_Us/export?format=csv&gid=0" },
+      { name: "Pakavs",       url: "https://docs.google.com/spreadsheets/d/104x2Vhi2fvGm1osQlM3EL2QGaKLfC1Sfq4phakIsRO0/export?format=csv&gid=0" },
+      { name: "Koferis",      url: "https://docs.google.com/spreadsheets/d/1fTevBQl8cf6nPYj8WWmCscjK__6Y03vei3GGXfvp_9I/export?format=csv&gid=0" },
+      { name: "Metiens",      url: "https://docs.google.com/spreadsheets/d/1BmPzOrS7vOc_IiZSTRRJv_sIEm7xcBFT6qjZMkp0PPE/export?format=csv&gid=0" }
+    ];
 
-  // fixed colors by team
-  const TEAM_COLORS = {
-    "Zaļā komanda": "#28a745",
-    "Zilā komanda": "#007bff",
-    "Baltā komanda": "#6c757d",
-    "Sarkanā komanda": "#dc3545"
-  };
+    // exact team names in sheet
+    const TEAM_COLORS = {
+      "Zaļā":  "#28a745",
+      "Zilā":  "#007bff",
+      "Baltā": "#6c757d",
+      "Sarkanā":"#dc3545"
+    };
 
-  const select = document.getElementById('sheetSelect');
-  const board  = document.getElementById('leaderboard');
+    const select = document.getElementById('sheetSelect');
+    const board  = document.getElementById('leaderboard');
 
-  // populate dropdown
-  SHEETS.forEach((s,i)=>{
-    select.options[i] = new Option(s.name,i);
-  });
-
-  function fetchAndRender(){
-    const { name, url } = SHEETS[select.value];
-    Papa.parse(url, {
-      download: true,
-      header: false,    // get raw arrays
-      complete: ({ data }) => {
-        let entries = [];
-        if(name === "Kopvērtējums"){
-          // always rows 3–6 => data[2..5], cols B=1, T=19
-          for(let r=2; r<=5; r++){
-            const row = data[r]||[];
-            const team  = row[1] || "";
-            const score = parseFloat(row[19])||0;
-            if(team) entries.push({team,score});
-          }
-        } else {
-          // other sheets use rows 2–5 => data[1..4], cols H=7, I=8
-          for(let r=1; r<=4; r++){
-            const row = data[r]||[];
-            const team  = row[7] || "";
-            const score = parseFloat(row[8])||0;
-            if(team) entries.push({team,score});
-          }
-        }
-        // sort descending by score
-        entries.sort((a,b)=> b.score - a.score);
-
-        // render
-        board.innerHTML = "";
-        entries.forEach((e,i)=>{
-          const d = document.createElement('div');
-          d.className = 'team';
-          d.style.borderColor = TEAM_COLORS[e.team]||"#ccc";
-          d.innerHTML = `<span>${i+1}. ${e.team}</span><span>${e.score}</span>`;
-          board.appendChild(d);
-        });
-      }
+    // fill dropdown
+    SHEETS.forEach((s,i)=>{
+      select.options[i] = new Option(s.name, i);
     });
-  }
 
-  select.addEventListener('change',fetchAndRender);
-  fetchAndRender();
-  setInterval(fetchAndRender,10000);
-</script>
+    function fetchAndRender(){
+      const { name, url } = SHEETS[ select.value ];
+      Papa.parse(url, {
+        download: true,
+        header: false,
+        complete: ({ data }) => {
+          let entries = [];
 
+          if(name === "Kopvērtējums"){
+            // rows 3–6 => data[2..5], B=idx1, T=idx19
+            for(let r=2; r<=5; r++){
+              const row = data[r]||[];
+              const team  = row[1]   || "";
+              const score = parseFloat(row[19]) || 0;
+              if(team) entries.push({team,score});
+            }
+          } else {
+            // activities rows 2–5 => data[1..4], H=idx7, K=idx10
+            for(let r=1; r<=4; r++){
+              const row = data[r]||[];
+              const team  = row[7]   || "";
+              const score = parseFloat(row[10]) || 0;
+              if(team) entries.push({team,score});
+            }
+          }
+
+          // sort desc
+          entries.sort((a,b)=> b.score - a.score);
+
+          // render
+          board.innerHTML = '';
+          // header row
+          const hdr = document.createElement('div');
+          hdr.className = 'headerRow';
+          hdr.innerHTML = '<span>Komanda</span><span>Punkti</span>';
+          board.appendChild(hdr);
+
+          entries.forEach((e,i)=>{
+            const d = document.createElement('div');
+            d.className = 'team';
+            d.style.borderColor = TEAM_COLORS[e.team]||'#ccc';
+            d.innerHTML = `<span>${i+1}. ${e.team}</span><span>${e.score}</span>`;
+            board.appendChild(d);
+          });
+        }
+      });
+    }
+
+    select.addEventListener('change', fetchAndRender);
+    fetchAndRender();
+    setInterval(fetchAndRender, 10000);
+  </script>
 </body>
 </html>
