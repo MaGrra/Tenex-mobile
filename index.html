@@ -4,19 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Rezultāti</title>
+  <!-- Google Font: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ─── Background gradient ───────────────────────────────────────── */
+    /* Background gradient */
     body {
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(145deg,
-        #fceabb, /* pale yellow */
-        #f8b500, /* gold */
-        #fbd786, /* light apricot */
-        #c2ffd8, /* mint */
-        #a0e3f0, /* pastel blue */
-        #ffd1dc  /* blush */
+        #fceabb, #f8b500, #fbd786, #c2ffd8, #a0e3f0, #ffd1dc
       );
       background-size: 400% 400%;
       animation: gradientFlow 30s ease infinite;
@@ -33,7 +30,7 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* ─── Card container ─────────────────────────────────────────────── */
+    /* Card container */
     .card {
       background: white;
       border-radius: 12px;
@@ -44,7 +41,7 @@
       box-sizing: border-box;
     }
 
-    /* ─── Logo & Title ─────────────────────────────────────────────── */
+    /* Logo & Title */
     .logo {
       display: block;
       margin: 0 auto 16px;
@@ -56,15 +53,19 @@
       font-size: 1.8em;
       text-align: center;
       color: #333;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
     }
     p.subtitle {
       margin: 4px 0 16px;
       text-align: center;
       color: #666;
       font-size: 0.95em;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 400;
     }
 
-    /* ─── Dropdown & Section ───────────────────────────────────────── */
+    /* Dropdown & Section */
     select {
       width: 100%;
       padding: 8px;
@@ -73,16 +74,19 @@
       border-radius: 6px;
       margin-bottom: 12px;
       box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
     }
     #sectionTitle {
       text-align: center;
       font-size: 1.2em;
-      font-weight: bold;
+      font-weight: 600;
       margin: 12px 0;
       color: #333;
+      font-family: 'Poppins', sans-serif;
     }
 
-    /* ─── Leaderboard ───────────────────────────────────────────────── */
+    /* Leaderboard */
     #leaderboard { margin-top: 8px; }
     .headerRow {
       display: flex;
@@ -91,26 +95,60 @@
       margin-bottom: 6px;
       background: #f5f5f5;
       border-radius: 6px;
-      font-weight: bold;
+      font-weight: 600;
       font-size: 0.95em;
+      font-family: 'Poppins', sans-serif;
     }
     .team {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 10px 12px;
       margin-bottom: 6px;
       border: 2px solid #ccc;
       border-radius: 6px;
       background: white;
+    }
+    .team-content {
+      display: flex;
+      align-items: center;
+    }
+    .rank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #333;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 1em;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+    .team-name {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
       font-size: 0.95em;
+      color: #333;
+    }
+    .score {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 0.95em;
+      color: #333;
     }
 
-    /* ─── Build footer ──────────────────────────────────────────────── */
+    /* Build footer */
     #build {
       text-align: center;
       font-size: 0.8em;
       color: #999;
       margin-top: 16px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 400;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
@@ -118,22 +156,14 @@
 <body>
 
   <div class="card">
-    <!-- Logo -->
     <img src="logo.png" alt="Logo" class="logo" />
-
-    <!-- Main Title -->
     <h1>Rezultāti</h1>
     <p class="subtitle">Izvēlies disciplīnu</p>
 
-    <!-- Dropdown & Section -->
     <select id="sheetSelect"></select>
     <div id="sectionTitle"></div>
-
-    <!-- Leaderboard -->
     <div id="leaderboard"></div>
-
-    <!-- Build # -->
-    <div id="build">Build #7</div>
+    <div id="build">Build #8</div>
   </div>
 
   <script>
@@ -148,60 +178,28 @@
       { name: "Koferis",      url: "https://docs.google.com/spreadsheets/d/1fTevBQl8cf6nPYj8WWmCscjK__6Y03vei3GGXfvp_9I/export?format=csv&gid=0" },
       { name: "Metiens",      url: "https://docs.google.com/spreadsheets/d/1BmPzOrS7vOc_IiZSTRRJv_sIEm7xcBFT6qjZMkp0PPE/export?format=csv&gid=0" }
     ];
-
-    const COLORS = {
-      "Zaļā":   "#28a745",
-      "Zilā":   "#007bff",
-      "Baltā":  "#6c757d",
-      "Sarkanā":"#dc3545"
-    };
-
+    const COLORS = { "Zaļā": "#28a745", "Zilā": "#007bff", "Baltā": "#6c757d", "Sarkanā": "#dc3545" };
     const select = document.getElementById('sheetSelect');
     const sectionTitle = document.getElementById('sectionTitle');
     const board  = document.getElementById('leaderboard');
 
-    // populate dropdown
-    SHEETS.forEach((s,i)=>{
-      select.options[i] = new Option(s.name, i);
-    });
+    SHEETS.forEach((s,i)=> select.options[i] = new Option(s.name,i));
 
     function fetchAndRender(){
       const { name, url } = SHEETS[ select.value ];
       sectionTitle.textContent = name;
-
-      Papa.parse(url, {
-        download: true,
-        header: false,
+      Papa.parse(url, { download:true, header:false,
         complete: ({ data }) => {
           let rows = [];
-
-          if(name === "Kopvērtējums"){
-            for(let r=2; r<=5; r++){
-              const row = data[r]||[];
-              rows.push({ team: row[1] || "", score: parseFloat(row[19])||0 });
-            }
-          } else {
-            for(let r=1; r<=4; r++){
-              const row = data[r]||[];
-              rows.push({ team: row[7] || "", score: parseFloat(row[10])||0 });
-            }
-          }
-
-          rows.sort((a,b)=> b.score - a.score);
-
-          // render
+          if(name === "Kopvērtējums"){ for(let r=2;r<=5;r++){ const row=data[r]||[]; rows.push({team:row[1]||"",score:parseFloat(row[19])||0}); }}
+          else { for(let r=1;r<=4;r++){ const row=data[r]||[]; rows.push({team:row[7]||"",score:parseFloat(row[10])||0}); }}
+          rows.sort((a,b)=>b.score-a.score);
           board.innerHTML = '';
-          // header
-          const hdr = document.createElement('div');
-          hdr.className = 'headerRow';
-          hdr.innerHTML = '<span>Komanda</span><span>Punkti</span>';
+          const hdr = document.createElement('div'); hdr.className='headerRow'; hdr.innerHTML='<span>Komanda</span><span>Punkti</span>';
           board.appendChild(hdr);
-
           rows.forEach((e,i)=>{
-            const d = document.createElement('div');
-            d.className = 'team';
-            d.style.borderColor = COLORS[e.team] || '#ccc';
-            d.innerHTML = `<span>${i+1}. ${e.team}</span><span>${e.score}</span>`;
+            const d = document.createElement('div'); d.className='team'; d.style.borderColor=COLORS[e.team]||'#ccc';
+            d.innerHTML = `<div class='team-content'><span class='rank'>${i+1}</span><span class='team-name'>${e.team}</span></div><span class='score'>${e.score}</span>`;
             board.appendChild(d);
           });
         }
@@ -210,8 +208,7 @@
 
     select.addEventListener('change', fetchAndRender);
     fetchAndRender();
-    setInterval(fetchAndRender, 10000);
+    setInterval(fetchAndRender,10000);
   </script>
-
 </body>
 </html>
