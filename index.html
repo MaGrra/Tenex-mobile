@@ -54,67 +54,84 @@
   <select id="sheetSelect"></select>
 
   <div id="leaderboard"></div>
-  <div id="build">Build #1</div>
+  <div id="build">Build #4</div>
 
    <!-- … up in your <head> keep everything the same … -->
 
   <script>
-    // ─── Sheets List ─────────────────────────────────────────────────────────
-    const SHEETS = [
-      { name: "Kopvērtējums", url: "https://docs.google.com/spreadsheets/d/1vGwEZFF1CQug9Zu-lolmuZ7ZMH5hLOklmYTydHhktaw/export?format=csv&gid=0" },
-      { name: "Rodeo",        url: "https://docs.google.com/spreadsheets/d/1GRv7i8FD7Ergscl2znh7MkmootGrzVgSx2i1QJDpoiY/export?format=csv&gid=0" },
-      { name: "Kannas",       url: "https://docs.google.com/spreadsheets/d/1SLgcLEFkvzDaTtQMb8UFoRMDnZSExvLN_wwiNjfwlnc/export?format=csv&gid=0" },
-      { name: "Futbols",      url: "https://docs.google.com/spreadsheets/d/102Hxs4Ae-ZNml0tGS3NFCi0lQvJ7I2deeeNQR2Crz9s/export?format=csv&gid=0" },
-      { name: "Āķis",         url: "https://docs.google.com/spreadsheets/d/1jokyEEJULQn_0ysiMpLp961rP5ilc-d_5ilPw0Mgjo0/export?format=csv&gid=0" },
-      { name: "Bungas",       url: "https://docs.google.com/spreadsheets/d/1Rf5yQxaDOvrLI-d13U9E3h0LgPc5CAEVnALtkEhZ_Us/export?format=csv&gid=0" },
-      { name: "Pakavs",       url: "https://docs.google.com/spreadsheets/d/104x2Vhi2fvGm1osQlM3EL2QGaKLfC1Sfq4phakIsRO0/export?format=csv&gid=0" },
-      { name: "Koferis",      url: "https://docs.google.com/spreadsheets/d/1fTevBQl8cf6nPYj8WWmCscjK__6Y03vei3GGXfvp_9I/export?format=csv&gid=0" },
-      { name: "Metiens",      url: "https://docs.google.com/spreadsheets/d/1BmPzOrS7vOc_IiZSTRRJv_sIEm7xcBFT6qjZMkp0PPE/export?format=csv&gid=0" }
-    ];
+  // ─── Sheets List ─────────────────────────────────────────────────────────
+  const SHEETS = [
+    { name: "Kopvērtējums", url: "https://docs.google.com/spreadsheets/d/1vGwEZFF1CQug9Zu-lolmuZ7ZMH5hLOklmYTydHhktaw/export?format=csv&gid=0" },
+    { name: "Rodeo",        url: "https://docs.google.com/spreadsheets/d/1GRv7i8FD7Ergscl2znh7MkmootGrzVgSx2i1QJDpoiY/export?format=csv&gid=0" },
+    { name: "Kannas",       url: "https://docs.google.com/spreadsheets/d/1SLgcLEFkvzDaTtQMb8UFoRMDnZSExvLN_wwiNjfwlnc/export?format=csv&gid=0" },
+    { name: "Futbols",      url: "https://docs.google.com/spreadsheets/d/102Hxs4Ae-ZNml0tGS3NFCi0lQvJ7I2deeeNQR2Crz9s/export?format=csv&gid=0" },
+    { name: "Āķis",         url: "https://docs.google.com/spreadsheets/d/1jokyEEJULQn_0ysiMpLp961rP5ilc-d_5ilPw0Mgjo0/export?format=csv&gid=0" },
+    { name: "Bungas",       url: "https://docs.google.com/spreadsheets/d/1Rf5yQxaDOvrLI-d13U9E3h0LgPc5CAEVnALtkEhZ_Us/export?format=csv&gid=0" },
+    { name: "Pakavs",       url: "https://docs.google.com/spreadsheets/d/104x2Vhi2fvGm1osQlM3EL2QGaKLfC1Sfq4phakIsRO0/export?format=csv&gid=0" },
+    { name: "Koferis",      url: "https://docs.google.com/spreadsheets/d/1fTevBQl8cf6nPYj8WWmCscjK__6Y03vei3GGXfvp_9I/export?format=csv&gid=0" },
+    { name: "Metiens",      url: "https://docs.google.com/spreadsheets/d/1BmPzOrS7vOc_IiZSTRRJv_sIEm7xcBFT6qjZMkp0PPE/export?format=csv&gid=0" }
+  ];
 
-    const select = document.getElementById('sheetSelect');
-    const board  = document.getElementById('leaderboard');
+  // fixed colors by team
+  const TEAM_COLORS = {
+    "Zaļā komanda": "#28a745",
+    "Zilā komanda": "#007bff",
+    "Baltā komanda": "#6c757d",
+    "Sarkanā komanda": "#dc3545"
+  };
 
-    // Populate dropdown once
-    SHEETS.forEach((sheet,i) => {
-      select.options[i] = new Option(sheet.name, i);
-    });
+  const select = document.getElementById('sheetSelect');
+  const board  = document.getElementById('leaderboard');
 
-    // Fetch & render
-    function fetchAndRender(){
-      const sheet = SHEETS[ select.value ];
-      Papa.parse(sheet.url, {
-        download: true,
-        header: false,    // raw arrays
-        complete: ({ data }) => {
-          // data[0] is header row – real rows start at data[1]
-          // We want rows 2–5 => data[2]..data[5]
-          const teams = [];
-          for(let row=2; row<=5; row++){
-            const r = data[row] || [];
-            const name  = r[7] || '';              // column H is index 7
-            const score = parseFloat(r[8]) || 0;   // column I is index 8
-            if(name) teams.push({ name, score });
+  // populate dropdown
+  SHEETS.forEach((s,i)=>{
+    select.options[i] = new Option(s.name,i);
+  });
+
+  function fetchAndRender(){
+    const { name, url } = SHEETS[select.value];
+    Papa.parse(url, {
+      download: true,
+      header: false,    // get raw arrays
+      complete: ({ data }) => {
+        let entries = [];
+        if(name === "Kopvērtējums"){
+          // always rows 3–6 => data[2..5], cols B=1, T=19
+          for(let r=2; r<=5; r++){
+            const row = data[r]||[];
+            const team  = row[1] || "";
+            const score = parseFloat(row[19])||0;
+            if(team) entries.push({team,score});
           }
-          teams.sort((a,b)=> b.score - a.score);
-
-          // render
-          board.innerHTML = '';
-          teams.forEach((t,i)=>{
-            const div = document.createElement('div');
-            div.className = 'team';
-            div.innerHTML = `<span>${i+1}. ${t.name}</span><span>${t.score}</span>`;
-            board.appendChild(div);
-          });
+        } else {
+          // other sheets use rows 2–5 => data[1..4], cols H=7, I=8
+          for(let r=1; r<=4; r++){
+            const row = data[r]||[];
+            const team  = row[7] || "";
+            const score = parseFloat(row[8])||0;
+            if(team) entries.push({team,score});
+          }
         }
-      });
-    }
+        // sort descending by score
+        entries.sort((a,b)=> b.score - a.score);
 
-    // Initial & interval
-    select.addEventListener('change', fetchAndRender);
-    fetchAndRender();
-    setInterval(fetchAndRender, 10000);
-  </script>
+        // render
+        board.innerHTML = "";
+        entries.forEach((e,i)=>{
+          const d = document.createElement('div');
+          d.className = 'team';
+          d.style.borderColor = TEAM_COLORS[e.team]||"#ccc";
+          d.innerHTML = `<span>${i+1}. ${e.team}</span><span>${e.score}</span>`;
+          board.appendChild(d);
+        });
+      }
+    });
+  }
+
+  select.addEventListener('change',fetchAndRender);
+  fetchAndRender();
+  setInterval(fetchAndRender,10000);
+</script>
 
 </body>
 </html>
