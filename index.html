@@ -56,64 +56,65 @@
   <div id="leaderboard"></div>
   <div id="build">Build #1</div>
 
+   <!-- … up in your <head> keep everything the same … -->
+
   <script>
-    // ─── Your sheets list ─────────────────────────────────────────────────────
+    // ─── Sheets List ─────────────────────────────────────────────────────────
     const SHEETS = [
-      { name: "Kopvērtējums", url: "https://docs.google.com/spreadsheets/d/1vGwEZFF1CQug9Zu-lolmuZ7ZMH5hLOklmYTydHhktaw/pub?output=csv&gid=0" },
-      { name: "Rodeo",        url: "https://docs.google.com/spreadsheets/d/1GRv7i8FD7Ergscl2znh7MkmootGrzVgSx2i1QJDpoiY/pub?output=csv&gid=0" },
-      { name: "Kannas",       url: "https://docs.google.com/spreadsheets/d/1SLgcLEFkvzDaTtQMb8UFoRMDnZSExvLN_wwiNjfwlnc/pub?output=csv&gid=0" },
-      { name: "Futbols",      url: "https://docs.google.com/spreadsheets/d/102Hxs4Ae-ZNml0tGS3NFCi0lQvJ7I2deeeNQR2Crz9s/pub?output=csv&gid=0" },
-      { name: "Āķis",         url: "https://docs.google.com/spreadsheets/d/1jokyEEJULQn_0ysiMpLp961rP5ilc-d_5ilPw0Mgjo0/pub?output=csv&gid=0" },
-      { name: "Bungas",       url: "https://docs.google.com/spreadsheets/d/1Rf5yQxaDOvrLI-d13U9E3h0LgPc5CAEVnALtkEhZ_Us/pub?output=csv&gid=0" },
-      { name: "Pakavs",       url: "https://docs.google.com/spreadsheets/d/104x2Vhi2fvGm1osQlM3EL2QGaKLfC1Sfq4phakIsRO0/pub?output=csv&gid=0" },
-      { name: "Koferis",      url: "https://docs.google.com/spreadsheets/d/1fTevBQl8cf6nPYj8WWmCscjK__6Y03vei3GGXfvp_9I/pub?output=csv&gid=0" },
-      { name: "Metiens",      url: "https://docs.google.com/spreadsheets/d/1BmPzOrS7vOc_IiZSTRRJv_sIEm7xcBFT6qjZMkp0PPE/pub?output=csv&gid=0" }
+      { name: "Kopvērtējums", url: "https://docs.google.com/spreadsheets/d/1vGwEZFF1CQug9Zu-lolmuZ7ZMH5hLOklmYTydHhktaw/export?format=csv&gid=0" },
+      { name: "Rodeo",        url: "https://docs.google.com/spreadsheets/d/1GRv7i8FD7Ergscl2znh7MkmootGrzVgSx2i1QJDpoiY/export?format=csv&gid=0" },
+      { name: "Kannas",       url: "https://docs.google.com/spreadsheets/d/1SLgcLEFkvzDaTtQMb8UFoRMDnZSExvLN_wwiNjfwlnc/export?format=csv&gid=0" },
+      { name: "Futbols",      url: "https://docs.google.com/spreadsheets/d/102Hxs4Ae-ZNml0tGS3NFCi0lQvJ7I2deeeNQR2Crz9s/export?format=csv&gid=0" },
+      { name: "Āķis",         url: "https://docs.google.com/spreadsheets/d/1jokyEEJULQn_0ysiMpLp961rP5ilc-d_5ilPw0Mgjo0/export?format=csv&gid=0" },
+      { name: "Bungas",       url: "https://docs.google.com/spreadsheets/d/1Rf5yQxaDOvrLI-d13U9E3h0LgPc5CAEVnALtkEhZ_Us/export?format=csv&gid=0" },
+      { name: "Pakavs",       url: "https://docs.google.com/spreadsheets/d/104x2Vhi2fvGm1osQlM3EL2QGaKLfC1Sfq4phakIsRO0/export?format=csv&gid=0" },
+      { name: "Koferis",      url: "https://docs.google.com/spreadsheets/d/1fTevBQl8cf6nPYj8WWmCscjK__6Y03vei3GGXfvp_9I/export?format=csv&gid=0" },
+      { name: "Metiens",      url: "https://docs.google.com/spreadsheets/d/1BmPzOrS7vOc_IiZSTRRJv_sIEm7xcBFT6qjZMkp0PPE/export?format=csv&gid=0" }
     ];
 
     const select = document.getElementById('sheetSelect');
     const board  = document.getElementById('leaderboard');
 
-    // Populate dropdown
-    SHEETS.forEach((s, i) => {
-      const opt = document.createElement('option');
-      opt.value = i;
-      opt.textContent = s.name;
-      select.appendChild(opt);
+    // Populate dropdown once
+    SHEETS.forEach((sheet,i) => {
+      select.options[i] = new Option(sheet.name, i);
     });
 
-    // Fetch & render function
-    function fetchAndRender() {
-      const sheet = SHEETS[select.value];
+    // Fetch & render
+    function fetchAndRender(){
+      const sheet = SHEETS[ select.value ];
       Papa.parse(sheet.url, {
         download: true,
-        header: true,
+        header: false,    // raw arrays
         complete: ({ data }) => {
-          // assume headers: H2:H5 = team names, I2:I5 = scores
+          // data[0] is header row – real rows start at data[1]
+          // We want rows 2–5 => data[2]..data[5]
           const teams = [];
-          for (let i=2; i<=5; i++) {
-            const name  = data[i-1][Object.keys(data[i-1])[0]];      // first column
-            const score = parseFloat(data[i-1][Object.keys(data[i-1])[1]]) || 0;
-            if (name) teams.push({ name, score });
+          for(let row=2; row<=5; row++){
+            const r = data[row] || [];
+            const name  = r[7] || '';              // column H is index 7
+            const score = parseFloat(r[8]) || 0;   // column I is index 8
+            if(name) teams.push({ name, score });
           }
-          // sort desc
-          teams.sort((a,b)=>b.score-a.score);
+          teams.sort((a,b)=> b.score - a.score);
 
           // render
           board.innerHTML = '';
-          teams.forEach((t, idx) => {
+          teams.forEach((t,i)=>{
             const div = document.createElement('div');
             div.className = 'team';
-            div.innerHTML = `<span>${idx+1}. ${t.name}</span><span>${t.score}</span>`;
+            div.innerHTML = `<span>${i+1}. ${t.name}</span><span>${t.score}</span>`;
             board.appendChild(div);
           });
         }
       });
     }
 
-    // on change + interval
+    // Initial & interval
     select.addEventListener('change', fetchAndRender);
     fetchAndRender();
     setInterval(fetchAndRender, 10000);
   </script>
+
 </body>
 </html>
