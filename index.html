@@ -15,17 +15,32 @@
       align-items: center;
       padding: 16px;
     }
-    h1 { font-size: 2em; margin: 0.5em 0 0.2em; }
-    p.subtitle { margin: 0 0 1em; color: #666; }
+    h1 {
+      font-size: 2em;
+      margin: 0.5em 0 0.2em;
+    }
+    p.subtitle {
+      margin: 0 0 1em;
+      color: #666;
+    }
+    #sectionTitle {
+      font-size: 1.4em;
+      margin: 1em 0 0.5em;
+      font-weight: bold;
+    }
     select {
       width: 100%;
       max-width: 320px;
       padding: 0.5em;
       font-size: 1em;
-      margin-bottom: 1em;
+      margin-bottom: 0.5em;
+    }
+    #leaderboard {
+      width: 100%;
+      max-width: 320px;
+      box-sizing: border-box;
     }
     .headerRow {
-      width: 100%; max-width: 320px;
       display: flex;
       justify-content: space-between;
       padding: 0.5em 1em;
@@ -35,7 +50,6 @@
       border-radius: 4px;
     }
     .team {
-      width: 100%; max-width: 320px;
       display: flex;
       justify-content: space-between;
       padding: 0.75em 1em;
@@ -45,19 +59,25 @@
       background: white;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    #build { margin-top: 1.5em; font-size: 0.8em; color: #999; }
+    #build {
+      margin-top: 1.5em;
+      font-size: 0.8em;
+      color: #999;
+    }
   </style>
-  <!-- PapaParse for CSV parsing -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 </head>
 <body>
 
   <h1>Rezultāti</h1>
   <p class="subtitle">Izvēlies disciplīnu</p>
+
   <select id="sheetSelect"></select>
+  <!-- NEW: Section title -->
+  <div id="sectionTitle"></div>
 
   <div id="leaderboard"></div>
-  <div id="build">Build #5</div>
+  <div id="build">Build #6</div>
 
   <script>
     const SHEETS = [
@@ -72,24 +92,27 @@
       { name: "Metiens",      url: "https://docs.google.com/spreadsheets/d/1BmPzOrS7vOc_IiZSTRRJv_sIEm7xcBFT6qjZMkp0PPE/export?format=csv&gid=0" }
     ];
 
-    // exact team names in sheet
     const TEAM_COLORS = {
-      "Zaļā":  "#28a745",
-      "Zilā":  "#007bff",
-      "Baltā": "#6c757d",
+      "Zaļā":   "#28a745",
+      "Zilā":   "#007bff",
+      "Baltā":  "#6c757d",
       "Sarkanā":"#dc3545"
     };
 
     const select = document.getElementById('sheetSelect');
+    const sectionTitle = document.getElementById('sectionTitle');
     const board  = document.getElementById('leaderboard');
 
-    // fill dropdown
+    // Populate dropdown
     SHEETS.forEach((s,i)=>{
       select.options[i] = new Option(s.name, i);
     });
 
     function fetchAndRender(){
       const { name, url } = SHEETS[ select.value ];
+      // update section title
+      sectionTitle.textContent = name;
+
       Papa.parse(url, {
         download: true,
         header: false,
@@ -97,7 +120,6 @@
           let entries = [];
 
           if(name === "Kopvērtējums"){
-            // rows 3–6 => data[2..5], B=idx1, T=idx19
             for(let r=2; r<=5; r++){
               const row = data[r]||[];
               const team  = row[1]   || "";
@@ -105,19 +127,16 @@
               if(team) entries.push({team,score});
             }
           } else {
-            // activities rows 2–5 => data[1..4], H=idx7, K=idx10
             for(let r=1; r<=4; r++){
               const row = data[r]||[];
               const team  = row[7]   || "";
-              const score = parseFloat(row[10]) || 0;
+              const score = parseFloat(row[10]) || 0;  // K = idx10
               if(team) entries.push({team,score});
             }
           }
 
-          // sort desc
           entries.sort((a,b)=> b.score - a.score);
 
-          // render
           board.innerHTML = '';
           // header row
           const hdr = document.createElement('div');
@@ -138,7 +157,8 @@
 
     select.addEventListener('change', fetchAndRender);
     fetchAndRender();
-    setInterval(fetchAndRender, 10000);
+    setInterval(fetchAndRender,10000);
+
   </script>
 </body>
 </html>
