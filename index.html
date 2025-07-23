@@ -163,26 +163,26 @@
     <select id="sheetSelect"></select>
     <div id="sectionTitle"></div>
     <div id="leaderboard"></div>
-    <div id="build">Build #10</div>
+    <div id="build">Build #12</div>
   </div>
 
   <script>
     const SHEETS = [
       { name: "Kopvērtējums", url: "https://docs.google.com/spreadsheets/d/1vGwEZFF1CQug9Zu-lolmuZ7ZMH5hLOklmYTydHhktaw/export?format=csv&gid=0" },
-      { name: "Rodeo",        url: "https://docs.google.com/spreadsheets/d/1GRv7i8FD7Ergscl2znh7MkmootGrzVgSx2i1QJDpoiY/export?format=csv&gid=0" },
-      { name: "Kannu turēšana",       url: "https://docs.google.com/spreadsheets/d/1SLgcLEFkvzDaTtQMb8UFoRMDnZSExvLN_wwiNjfwlnc/export?format=csv&gid=0" },
-      { name: "Futbola sitieni",      url: "https://docs.google.com/spreadsheets/d/102Hxs4Ae-ZNml0tGS3NFCi0lQvJ7I2deeeNQR2Crz9s/export?format=csv&gid=0" },
-      { name: "Riņķis uz āķa",         url: "https://docs.google.com/spreadsheets/d/1jokyEEJULQn_0ysiMpLp961rP5ilc-d_5ilPw0Mgjo0/export?format=csv&gid=0" },
-      { name: "Bungas",       url: "https://docs.google.com/spreadsheets/d/1Rf5yQxaDOvrLI-d13U9E3h0LgPc5CAEVnALtkEhZ_Us/export?format=csv&gid=0" },
-      { name: "Pakavu kalšana",       url: "https://docs.google.com/spreadsheets/d/104x2Vhi2fvGm1osQlM3EL2QGaKLfC1Sfq4phakIsRO0/export?format=csv&gid=0" },
-      { name: "Milzu koferis",      url: "https://docs.google.com/spreadsheets/d/1fTevBQl8cf6nPYj8WWmCscjK__6Y03vei3GGXfvp_9I/export?format=csv&gid=0" },
-      { name: "Lielais metiens",      url: "https://docs.google.com/spreadsheets/d/1BmPzOrS7vOc_IiZSTRRJv_sIEm7xcBFT6qjZMkp0PPE/export?format=csv&gid=0" }
+      { name: "Rodeo bullis",        url: "https://docs.google.com/spreadsheets/d/1GRv7i8FD7Ergscl2znh7MkmootGrzVgSx2i1QJDpoiY/export?format=csv&gid=0" },
+      { name: "Spēcīgās rokas",       url: "https://docs.google.com/spreadsheets/d/1SLgcLEFkvzDaTtQMb8UFoRMDnZSExvLN_wwiNjfwlnc/export?format=csv&gid=0" },
+      { name: "Stiprais sitiens",      url: "https://docs.google.com/spreadsheets/d/102Hxs4Ae-ZNml0tGS3NFCi0lQvJ7I2deeeNQR2Crz9s/export?format=csv&gid=0" },
+      { name: "Precizitātes šūpoles",         url: "https://docs.google.com/spreadsheets/d/1jokyEEJULQn_0ysiMpLp961rP5ilc-d_5ilPw0Mgjo0/export?format=csv&gid=0" },
+      { name: "Komandas bungas",       url: "https://docs.google.com/spreadsheets/d/1Rf5yQxaDOvrLI-d13U9E3h0LgPc5CAEVnALtkEhZ_Us/export?format=csv&gid=0" },
+      { name: "Veiklie jātnieki",       url: "https://docs.google.com/spreadsheets/d/104x2Vhi2fvGm1osQlM3EL2QGaKLfC1Sfq4phakIsRO0/export?format=csv&gid=0" },
+      { name: "Spēka trase",      url: "https://docs.google.com/spreadsheets/d/1fTevBQl8cf6nPYj8WWmCscjK__6Y03vei3GGXfvp_9I/export?format=csv&gid=0" },
+      { name: "Trāpi grozā",      url: "https://docs.google.com/spreadsheets/d/1BmPzOrS7vOc_IiZSTRRJv_sIEm7xcBFT6qjZMkp0PPE/export?format=csv&gid=0" }
     ];
 
 
   // Full team names as keys
   const COLORS = {
-    "Baltās krāsas komanda": "#ffffff",
+    "Baltās krāsas komanda": "#EEEEEE",
     "Mint krāsas komanda":   "#AAF0D1",
     "Tirkīza krāsas komanda":"#40E0D0",
     "Persiku krāsas komanda":"#FFDAB9"
