@@ -1,92 +1,248 @@
-import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rezultāti</title>
+  <!-- Google Font: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Background gradient */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(145deg,
+        #fceabb, #f8b500, #fbd786, #c2ffd8, #a0e3f0, #ffd1dc
+      );
+      background-size: 400% 400%;
+      animation: gradientFlow 30s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding-top: 40px;
+      box-sizing: border-box;
+    }
+    @keyframes gradientFlow {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-const SHEETS = [
-  { name: "Kopvērtējums", url: "https://docs.google.com/spreadsheets/d/1vGwEZFF1CQug9Zu-lolmuZ7ZMH5hLOklmYTydHhktaw/pub?output=csv&gid=0" },
-  { name: "Rodeo", url: "https://docs.google.com/spreadsheets/d/1GRv7i8FD7Ergscl2znh7MkmootGrzVgSx2i1QJDpoiY/pub?output=csv&gid=0" },
-  { name: "Kannu turēšana", url: "https://docs.google.com/spreadsheets/d/1SLgcLEFkvzDaTtQMb8UFoRMDnZSExvLN_wwiNjfwlnc/pub?output=csv&gid=0" },
-  { name: "Futbola sitieni", url: "https://docs.google.com/spreadsheets/d/102Hxs4Ae-ZNml0tGS3NFCi0lQvJ7I2deeeNQR2Crz9s/pub?output=csv&gid=0" },
-  { name: "Riņķis uz āķa", url: "https://docs.google.com/spreadsheets/d/1jokyEEJULQn_0ysiMpLp961rP5ilc-d_5ilPw0Mgjo0/pub?output=csv&gid=0" },
-  { name: "Bungas", url: "https://docs.google.com/spreadsheets/d/1Rf5yQxaDOvrLI-d13U9E3h0LgPc5CAEVnALtkEhZ_Us/pub?output=csv&gid=0" },
-  { name: "Pakavu kalšana", url: "https://docs.google.com/spreadsheets/d/104x2Vhi2fvGm1osQlM3EL2QGaKLfC1Sfq4phakIsRO0/pub?output=csv&gid=0" },
-  { name: "Milzu koferis", url: "https://docs.google.com/spreadsheets/d/1fTevBQl8cf6nPYj8WWmCscjK__6Y03vei3GGXfvp_9I/pub?output=csv&gid=0" },
-  { name: "Lielais metiens", url: "https://docs.google.com/spreadsheets/d/1BmPzOrS7vOc_IiZSTRRJv_sIEm7xcBFT6qjZMkp0PPE/pub?output=csv&gid=0" }
-];
+    /* Card container */
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 360px;
+      padding: 24px;
+      box-sizing: border-box;
+    }
 
-// Map team name prefixes to border colors
-const TEAM_COLORS = {
-  "Baltās": "#FFFFFF",      // Baltās krāsas komanda
-  "Mint": "#AAF0D1",        // Mint krāsas komanda
-  "Tirkīza": "#40E0D0",     // Tirkīza krāsas komanda
-  "Persiku": "#FFDAB9"      // Persiku krāsas komanda
-};
+    /* Logo & Title */
+    .logo {
+      display: block;
+      margin: 0 auto 16px;
+      max-width: 180px;
+      height: auto;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.8em;
+      text-align: center;
+      color: #333;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+    }
+    p.subtitle {
+      margin: 4px 0 16px;
+      text-align: center;
+      color: #666;
+      font-size: 0.95em;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 400;
+    }
 
-export default function ResultsMobile() {
-  const [selectedSheet, setSelectedSheet] = useState(SHEETS[0]);
-  const [teams, setTeams] = useState([]);
+    /* Dropdown & Section */
+    select {
+      width: 100%;
+      padding: 8px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+    }
+    #sectionTitle {
+      text-align: center;
+      font-size: 1.2em;
+      font-weight: 600;
+      margin: 12px 0;
+      color: #333;
+      font-family: 'Poppins', sans-serif;
+    }
 
-  const fetchData = async () => {
-    const res = await fetch(selectedSheet.url);
-    const csv = await res.text();
-    const rows = csv.trim().split("\n").slice(1);
-    const parsed = rows.map(r => r.split(","));
+    /* Leaderboard */
+    #leaderboard { margin-top: 8px; }
+    .headerRow {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+      margin-bottom: 6px;
+      background: #f5f5f5;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.95em;
+      font-family: 'Poppins', sans-serif;
+    }
+    .team {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      background: white;
+    }
+    .team-content {
+      display: flex;
+      align-items: center;
+    }
+    .rank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #333;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 1em;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+    .team-name {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 0.95em;
+      color: #333;
+    }
+    .score {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 0.95em;
+      color: #333;
+    }
 
-    const newData = parsed.map(r => ({
-      name: r[0],
-      score: parseFloat(r[1])
-    })).filter(r => r.name && !isNaN(r.score));
+    /* Build footer */
+    #build {
+      text-align: center;
+      font-size: 0.8em;
+      color: #999;
+      margin-top: 16px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 400;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+</head>
+<body>
 
-    newData.sort((a, b) => b.score - a.score);
-    setTeams(newData);
+  <div class="card">
+    <img src="logo.png" alt="Logo" class="logo" />
+    <h1>Rezultāti</h1>
+    <p class="subtitle">Izvēlies disciplīnu</p>
+
+    <select id="sheetSelect"></select>
+    <div id="sectionTitle"></div>
+    <div id="leaderboard"></div>
+    <div id="build">Build #10</div>
+  </div>
+
+  <script>
+    const SHEETS = [
+      { name: "Kopvērtējums", url: "https://docs.google.com/spreadsheets/d/1vGwEZFF1CQug9Zu-lolmuZ7ZMH5hLOklmYTydHhktaw/export?format=csv&gid=0" },
+      { name: "Rodeo",        url: "https://docs.google.com/spreadsheets/d/1GRv7i8FD7Ergscl2znh7MkmootGrzVgSx2i1QJDpoiY/export?format=csv&gid=0" },
+      { name: "Kannu turēšana",       url: "https://docs.google.com/spreadsheets/d/1SLgcLEFkvzDaTtQMb8UFoRMDnZSExvLN_wwiNjfwlnc/export?format=csv&gid=0" },
+      { name: "Futbola sitieni",      url: "https://docs.google.com/spreadsheets/d/102Hxs4Ae-ZNml0tGS3NFCi0lQvJ7I2deeeNQR2Crz9s/export?format=csv&gid=0" },
+      { name: "Riņķis uz āķa",         url: "https://docs.google.com/spreadsheets/d/1jokyEEJULQn_0ysiMpLp961rP5ilc-d_5ilPw0Mgjo0/export?format=csv&gid=0" },
+      { name: "Bungas",       url: "https://docs.google.com/spreadsheets/d/1Rf5yQxaDOvrLI-d13U9E3h0LgPc5CAEVnALtkEhZ_Us/export?format=csv&gid=0" },
+      { name: "Pakavu kalšana",       url: "https://docs.google.com/spreadsheets/d/104x2Vhi2fvGm1osQlM3EL2QGaKLfC1Sfq4phakIsRO0/export?format=csv&gid=0" },
+      { name: "Milzu koferis",      url: "https://docs.google.com/spreadsheets/d/1fTevBQl8cf6nPYj8WWmCscjK__6Y03vei3GGXfvp_9I/export?format=csv&gid=0" },
+      { name: "Lielais metiens",      url: "https://docs.google.com/spreadsheets/d/1BmPzOrS7vOc_IiZSTRRJv_sIEm7xcBFT6qjZMkp0PPE/export?format=csv&gid=0" }
+    ];
+
+
+  // Full team names as keys
+  const COLORS = {
+    "Baltās krāsas komanda": "#ffffff",
+    "Mint krāsas komanda":   "#AAF0D1",
+    "Tirkīza krāsas komanda":"#40E0D0",
+    "Persiku krāsas komanda":"#FFDAB9"
   };
 
-  useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 10000);
-    return () => clearInterval(interval);
-  }, [selectedSheet]);
+  const select = document.getElementById('sheetSelect');
+  const sectionTitle = document.getElementById('sectionTitle');
+  const board = document.getElementById('leaderboard');
 
-  return (
-    <div className="min-h-screen p-4 pt-20 bg-white">
-      <div className="text-center text-3xl font-bold mb-1" style={{ fontFamily: 'Poppins' }}>Rezultāti</div>
-      <div className="text-center text-sm text-gray-600 mb-4" style={{ fontFamily: 'Poppins' }}>Izvēlies disciplīnu</div>
-      <div className="max-w-xs mx-auto mb-4">
-        <Select onValueChange={value => {
-          const s = SHEETS.find(s => s.name === value);
-          if (s) setSelectedSheet(s);
-        }}>
-          <SelectTrigger>{selectedSheet.name}</SelectTrigger>
-          <SelectContent>
-            {SHEETS.map(sheet => (
-              <SelectItem key={sheet.name} value={sheet.name}>{sheet.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2 max-w-md mx-auto">
-        {teams.map((team, idx) => {
-          // Determine border color based on prefix
-          const prefix = team.name.split(' ')[0];
-          const borderColor = TEAM_COLORS[prefix] || '#000000';
-
-          return (
-            <Card key={team.name} style={{ border: `4px solid ${borderColor}` }}>
-              <CardContent className="p-3 flex justify-between items-center">
-                <div className="font-medium text-base" style={{ fontFamily: 'Poppins', fontWeight: 600 }}>
-                  {idx + 1}. {team.name}
-                </div>
-                <div className="text-sm font-semibold" style={{ fontFamily: 'Poppins', fontWeight: 600 }}>
-                  {team.score}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      <div className="text-xs text-gray-400 text-center mt-8" style={{ fontFamily: 'Poppins' }}>Build #11</div>
-    </div>
+  // Populate dropdown
+  SHEETS.forEach((s,i) =>
+    select.options[i] = new Option(s.name, i)
   );
-}
+
+  function fetchAndRender() {
+    const { name, url } = SHEETS[select.value];
+    sectionTitle.textContent = name;
+
+    Papa.parse(url, { download: true, header: false, 
+      complete: ({ data }) => {
+        let rows = [];
+        if(name === "Kopvērtējums") {
+          for(let r=2; r<=5; r++) {
+            const row = data[r]||[];
+            rows.push({team: row[1]||"", score: parseFloat(row[19])||0});
+          }
+        } else {
+          for(let r=1; r<=4; r++) {
+            const row = data[r]||[];
+            rows.push({team: row[7]||"", score: parseFloat(row[10])||0});
+          }
+        }
+        rows.sort((a,b) => b.score - a.score);
+
+        board.innerHTML = '';
+        const hdr = document.createElement('div');
+        hdr.className = 'headerRow';
+        hdr.innerHTML = '<span>Komanda</span><span>Punkti</span>';
+        board.appendChild(hdr);
+
+        rows.forEach((e,i) => {
+          const d = document.createElement('div');
+          d.className = 'team';
+          // Look up by full team name
+          d.style.borderColor = COLORS[e.team] || '#ccc';
+          d.innerHTML = `
+            <div class='team-content'>
+              <span class='rank'>${i+1}</span>
+              <span class='team-name'>${e.team}</span>
+            </div>
+            <span class='score'>${e.score}</span>`;
+          board.appendChild(d);
+        });
+      }
+    });
+  }
+
+  select.addEventListener('change', fetchAndRender);
+  fetchAndRender();
+  setInterval(fetchAndRender, 10000);
+</script>
+</body>
+</html>
